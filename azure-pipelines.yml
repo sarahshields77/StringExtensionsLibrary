@@ -1,0 +1,57 @@
+# .NET Desktop
+# Build and run tests for .NET Desktop or Windows classic desktop solutions.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
+
+trigger:
+- main
+
+pool:
+  name: MySelfHostedAgentPool
+
+variables:
+  buildConfiguration: 'Release'
+  solution: 'StringExtensionsLibrary.sln'  # Path to .sln file (from the project root)
+  projectPath: 'StringExtensionsLibrary/StringExtensionsLibrary.csproj' # Path to your .csproj file
+  nugetPackagePath: '$(Build.ArtifactStagingDirectory)'
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Use .NET 8.0'
+  inputs:
+    packageType: 'sdk'
+    version: '8.0.x'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Restore NuGet Packages'
+  inputs:
+    command: 'restore'
+    projects: '$(solution)'
+    feedsToUse: 'select'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build Solution'
+  inputs:
+    command: 'build'
+    projects: '$(solution)'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Pack NuGet Package'
+  inputs:
+    command: 'pack'
+    packagesToPack: '$(projectPath)'
+    versioningScheme: 'byPrereleaseNumber'
+    majorVersion: '1'
+    minorVersion: '0'
+    patchVersion: '0'
+    outputDir: '$(nugetPackagePath)'
+
+- task: NuGetCommand@2
+  displayName: 'Publish NuGet Package to Azure Artifacts'
+  inputs:
+    command: 'push'
+    packagesToPush: '$(nugetPackagePath)/*.nupkg'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: 'sshield9/StringExtensionsFeed'
+    allowPackageConflicts: true
