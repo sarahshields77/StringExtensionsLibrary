@@ -53,5 +53,5 @@ steps:
     command: 'push'
     packagesToPush: '$(nugetPackagePath)/*.nupkg'
     nuGetFeedType: 'internal'
-    publishVstsFeed: 'StringExtensionsFeed'
+    publishVstsFeed: 'SarahFeed'
     allowPackageConflicts: true
