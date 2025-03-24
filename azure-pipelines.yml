@@ -12,7 +12,7 @@ pool:
 variables:
   buildConfiguration: 'Release'
   solution: 'StringExtensionsLibrary.sln'  # Path to .sln file (from the project root)
-  projectPath: 'StringExtensionsLibrary/StringExtensionsLibrary.csproj' # Path to your .csproj file
+  projectPath: 'StringExtensionsLibrary/StringExtensionsLibrary.csproj' # Path to .csproj file
   nugetPackagePath: '$(Build.ArtifactStagingDirectory)'
 
 steps:
